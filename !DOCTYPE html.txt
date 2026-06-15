@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Game Nhảy</title>
+
+<style>
+body{
+    margin:0;
+    overflow:hidden;
+    background:#f0f0f0;
+}
+
+#game{
+    width:800px;
+    height:300px;
+    border:2px solid black;
+    margin:50px auto;
+    position:relative;
+    background:white;
+    overflow:hidden;
+}
+
+#player{
+    width:40px;
+    height:40px;
+    background:blue;
+    position:absolute;
+    bottom:0;
+    left:50px;
+}
+
+#obstacle{
+    width:25px;
+    height:60px;
+    background:green;
+    position:absolute;
+    bottom:0;
+    right:-25px;
+}
+
+#score{
+    position:absolute;
+    top:10px;
+    right:10px;
+    font-size:24px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="game">
+    <div id="score">0</div>
+    <div id="player"></div>
+    <div id="obstacle"></div>
+</div>
+
+<script>
+const player = document.getElementById("player");
+const obstacle = document.getElementById("obstacle");
+const scoreText = document.getElementById("score");
+
+let jumping = false;
+let score = 0;
+let obstacleX = 800;
+
+function jump(){
+    if(jumping) return;
+
+    jumping = true;
+    let height = 0;
+
+    let up = setInterval(() => {
+        height += 5;
+        player.style.bottom = height + "px";
+
+        if(height >= 120){
+            clearInterval(up);
+
+            let down = setInterval(() => {
+                height -= 5;
+                player.style.bottom = height + "px";
+
+                if(height <= 0){
+                    clearInterval(down);
+                    jumping = false;
+                }
+            },15);
+        }
+    },15);
+}
+
+document.addEventListener("keydown", e=>{
+    if(e.code==="Space"){
+        jump();
+    }
+});
+
+function gameLoop(){
+
+    obstacleX -= 5;
+    obstacle.style.left = obstacleX + "px";
+
+    if(obstacleX < -25){
+        obstacleX = 800;
+        score++;
+        scoreText.textContent = score;
+    }
+
+    const playerBottom =
+        parseInt(player.style.bottom) || 0;
+
+    if(
+        obstacleX > 40 &&
+        obstacleX < 90 &&
+        playerBottom < 60
+    ){
+        alert("Game Over! Điểm: " + score);
+        location.reload();
+    }
+
+    requestAnimationFrame(gameLoop);
+}
+
+gameLoop();
+</script>
+
+</body>
+</html>
